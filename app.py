@@ -352,10 +352,12 @@ def edit_artist(artist_id):
 def edit_artist_submission(artist_id):
     edit_artist =  Artist.query.get(artist_id)
     for key, value in request.form.items():
-        setattr(edit_artist, key, value)
+        if key == 'genres' or key == 'seeking_venue':
+            continue
+        setattr(edit_artist, key, value) # why doesn't edit_artist.__dict__.update(request.form) work here?
     genres = ', '.join(request.form.getlist('genres'))
     edit_artist.genres = genres
-    if 'seeking_venue' in request.form:
+    if request.form['seeking_venue'] == 'y':
         edit_artist.seeking_venue = True
     else:
         edit_artist.seeking_venue = False
@@ -379,10 +381,12 @@ def edit_venue(venue_id):
 def edit_venue_submission(venue_id):
     edit_venue =  Venue.query.get(venue_id)
     for key, value in request.form.items():
+        if key == 'genres' or key == 'seeking_talent':
+            continue
         setattr(edit_venue, key, value)
     genres = ', '.join(request.form.getlist('genres'))
     edit_venue.genres = genres
-    if 'seeking_talent' in request.form:
+    if request.form['seeking_talent'] == 'y':
         edit_venue.seeking_venue = True
     else:
         edit_venue.seeking_venue = False
@@ -397,7 +401,7 @@ def edit_venue_submission(venue_id):
     return redirect(url_for('show_venue', venue_id=venue_id))
 
 #  Shows
-#  ----------------------------------------------------------------
+#  --------------------------------------------------------------
 
 @app.route('/shows')
 def shows():

@@ -1,38 +1,48 @@
 {% extends 'layouts/main.html' %}
 {% block title %}Edit Venue{% endblock %}
 {% block content %}
+<script type="text/javascript">
+  function showHide() {
+    if (document.getElementById('seeking_talent').checked == true) {
+      document.getElementById('seeking_description').style.display = 'block'
+    } else {
+      document.getElementById('seeking_description').style.display = 'none'
+    }
+  }
+</script>
   <div class="form-wrapper">
     <form class="form" method="post" action="/venues/{{venue.id}}/edit">
       <h3 class="form-heading">Edit venue <em>{{ venue.name }}</em> <a href="{{ url_for('index') }}" title="Back to homepage"><i class="fa fa-home pull-right"></i></a></h3>
       <div class="form-group">
         <label for="name">Name</label>
-        {{ form.name(class_ = 'form-control', autofocus = true) }}
+        {{ form.name(class_ = 'form-control', autofocus = true, value=venue.name)  }}
       </div>
       <div class="form-group">
           <label>City & State</label>
           <div class="form-inline">
             <div class="form-group">
-              {{ form.city(class_ = 'form-control', placeholder='City', autofocus = true) }}
+              {{ form.city(class_ = 'form-control', placeholder='City', autofocus = true, value=venue.city) }}
             </div>
             <div class="form-group">
-              {{ form.state(class_ = 'form-control', placeholder='State', autofocus = true) }}
+              {{ form.state(class_ = 'form-control', placeholder='State', autofocus = true, value=venue.state) }}
             </div>
           </div>
       </div>
       <div class="form-group">
         <label for="address">Address</label>
-        {{ form.address(class_ = 'form-control', autofocus = true) }}
+        {{ form.address(class_ = 'form-control', autofocus = true, value=venue.address) }}
       </div>
       <div class="form-group">
           <label for="phone">Phone</label>
-          {{ form.phone(class_ = 'form-control', placeholder='xxx-xxx-xxxx', autofocus = true) }}
+          {{ form.phone(class_ = 'form-control', placeholder='xxx-xxx-xxxx', autofocus = true, value=venue.phone) }}
         </div>
         <div class="form-group">
           <label for="image_link">Image Link</label>
           {{ form.image_link(class_ = 'form_control',
-          placeholder='Image Link', autofocus = true) }}
+          placeholder='Image Link', autofocus = true, value=venue.image_link) }}
         </div>
 
+        <!-- TODO: populate the selection field with venue genres -->
         <div class="form-group">
           <label for="genres">Genres</label>
           <small>Ctrl+Click to select multiple</small>
@@ -40,21 +50,29 @@
         </div>
 
         <div class="form-group">
-          {{ form.seeking_talent(onclick="showHide()", class_ = 'form-check-input', autofocus = true) }}
+          {% if venue.seeking_talent==True %}
+            {{ form.seeking_talent(onclick="showHide()", class_ = 'form-check-input', autofocus = true, checked=true) }}
           <label for="seeking_talent">Seeking Talent</label>
           <div class="form-check">
-              {{ form.seeking_description(class_ = 'form-control', style="display:none", placeholder='Talent Description', autofocus = true) }}
+              {{ form.seeking_description(class_ = 'form-control', style="display:block", placeholder='Talent Description', autofocus = true, value=venue.seeking_description) }}
           </div>
+        {% else %}
+        {{ form.seeking_talent(onclick="showHide()", class_ = 'form-check-input', autofocus = true) }}
+          <label for="seeking_talent">Seeking Talent</label>
+          <div class="form-check">
+              {{ form.seeking_description(class_ = 'form-control', style="display:none", placeholder='Talent Description', autofocus = true, value=venue.seeking_description) }}
+          </div>
+        {% endif %}
         </div>
 
         <div class="form-group">
             <label for="facebook_link">Facebook Link</label>
-            {{ form.facebook_link(class_ = 'form-control', placeholder='http://', autofocus = true) }}
+            {{ form.facebook_link(class_ = 'form-control', placeholder='http://', autofocus = true, value=venue.facebook_link) }}
           </div>
 
         <div class="form-group">
             <label for="website">Website</label>
-            {{ form.website(class_ = 'form-control', placeholder='http://', autofocus = true) }}
+            {{ form.website(class_ = 'form-control', placeholder='http://', autofocus = true, value=venue.website) }}
           </div>
 
         <input type="submit" value="Update Venue" class="btn btn-primary btn-lg btn-block">
