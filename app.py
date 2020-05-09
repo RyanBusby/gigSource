@@ -218,12 +218,18 @@ def create_venue_submission():
 
 @app.route('/venues/<venue_id>', methods=['POST'])
 def delete_venue(venue_id):
+    # automatically delete shows that are associated with the venue
+    # https://docs.sqlalchemy.org/en/13/orm/cascades.html https://stackoverflow.com/questions/5033547/sqlalchemy-cascade-delete
     try:
-        v = Venue.query.get(venue_id)
-        db.session.delete(v)
+        show_delete = Show.query.filter_by(venue_id=venue_id).all()
+        venue_delete = Venue.query.get(venue_id)
+        for show in show_delete:
+            db.session.delete(show)
+        db.session.delete(venue_delete)
         db.session.commit()
-        flash(f'Venue {v.name} was successfully removed.')
+        flash(f'Venue {venue_delete.name} was successfully removed.')
     except:
+        flash(f'An error occurred. {venue_delete.name} could not be removed.')
         db.session.rollback()
     finally:
         db.session.close()
@@ -390,7 +396,6 @@ def edit_venue_submission(venue_id):
         db.session.close()
     return redirect(url_for('show_venue', venue_id=venue_id))
 
-
 #  Shows
 #  ----------------------------------------------------------------
 
@@ -440,7 +445,6 @@ def not_found_error(error):
 def server_error(error):
     return render_template('errors/500.html'), 500
 
-
 if not app.debug:
     file_handler = FileHandler('error.log')
     file_handler.setFormatter(
@@ -451,6 +455,5 @@ if not app.debug:
     app.logger.addHandler(file_handler)
     app.logger.info('errors')
 
-# Default port:
 if __name__ == '__main__':
     app.run(debug=True)
